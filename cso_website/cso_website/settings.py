@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-96oc2rrhoir1g67jpo-izuk@)@f9mb^_5c-kjkgeui59vik*#c
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -83,13 +83,13 @@ WSGI_APPLICATION = 'cso_website.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "cso_database",
+        "NAME": "csoa_database",
         "USER": "root",
         "PASSWORD": "root",
-        "PORT": '3307',
-    }
+        # "HOST": "host.docker.internal", uncomment this when you use docker
+        "PORT": '3307'
+        }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

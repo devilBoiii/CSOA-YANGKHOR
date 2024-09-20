@@ -307,13 +307,25 @@ class notifications(models.Model):
 
 class post_publish(models.Model):
     post_id = models.UUIDField(default=uuid.uuid4(), unique=True, editable=False)
-    post_img = models.ImageField(null=True, blank=True, upload_to="posts/")
+    post_img = models.ImageField(null=True, blank=True, upload_to="images/posts/")
     post_header = models.CharField(max_length=225, blank=True, null=True)
     activity = models.CharField(max_length=225, blank=True, null=True)
     published_date = models.DateField(auto_now_add=False, null=True, blank=True)
     post_description = CKEditor5Field(null=True, blank=True, config_name='extends')
     status = models.CharField(max_length=225, blank=True, null=True)
     featured = models.CharField(max_length=225, blank=True, null=True)
+    attachments = models.CharField(max_length=225, blank=True, null=True, default='No Attachment')
+    def __str__(self):
+        return self.post_header
+
+class page_contents(models.Model):
+    content_id = models.UUIDField(default=uuid.uuid4(), unique=True, editable=False)
+    content_img = models.ImageField(null=True, blank=True, upload_to="images/page_content/")
+    content_header = models.CharField(max_length=225, blank=True, null=True)
+    content_display = models.CharField(max_length=225, blank=True, null=True)
+    content_created = models.DateField(auto_now_add=True, null=True, blank=True)
+    contents= CKEditor5Field(null=True, blank=True, config_name='extends')
+    website_page = models.CharField(max_length=225, blank=True, null=True)
     attachments = models.CharField(max_length=225, blank=True, null=True, default='No Attachment')
     def __str__(self):
         return self.post_header

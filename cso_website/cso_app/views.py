@@ -76,7 +76,8 @@ def get_access_token():
 
 def home(request):
     current_year = datetime.now().year
-    context = {'current_year': current_year}
+    posts = post_publish.objects.all()
+    context = {'current_year': current_year, 'posts':posts}
     return render(request, 'cso_app/home.html', context)
 
 def cso_authority(request):
@@ -1074,6 +1075,7 @@ def master_data(request):
 def user_details(request, user_id):
     notifications_list = notifications.objects.all().order_by('-notification_created_at')
     user = users.objects.get(user_id=user_id)
+    print("This is the user: ", user)
     dob = user.dob.strftime("%Y-%m-%d")
     created_date = user.created_date.strftime("%Y-%m-%d")  
     user_id_queryset = users.objects.all().values_list('user_id', flat=True)
@@ -1088,6 +1090,7 @@ def user_details(request, user_id):
 def user_settings(request, user_id):
     notifications_list = notifications.objects.all().order_by('-notification_created_at')
     user = get_object_or_404(users, user_id=user_id)
+    print("This is the user: ", user)
     dob = user.dob.strftime("%Y-%m-%d")
     created_date = user.created_date.strftime("%Y-%m-%d")  
     user_id_queryset = users.objects.all().values_list('user_id', flat=True)
@@ -1929,7 +1932,10 @@ def post_form_upload(request):
             user_id = request.user.user_id  # Fetch the user ID
             user = get_object_or_404(users, user_id=user_id)
             role = user.role
+            
+            # Create new post
             new_post = post_publish(
+                post_id = uuid.uuid4(),
                 post_img=post_img,
                 post_header=post_title,
                 activity=post_tag,
@@ -1939,9 +1945,114 @@ def post_form_upload(request):
                 featured=featured_post
             )
             new_post.save()
+
+            # Create new notification
+            new_notification = notifications(
+                notification_title="New post uploaded!",
+                notification_content=f"New post titled {post_title} has been uploaded",
+                notification_view="Admin",
+                notification_orgs=user.organization,
+                notification_genre='posts',
+                author=user.full_name,
+                user_role=role
+            )
+            new_notification.save()
+
+            # Return a JSON response with a redirect URL
+            return JsonResponse({'success': True, 'redirect_url': '/publish_post/'})
+        except Exception as e:
+            # Log or print the error for debugging
+            print("Error creating post:", str(e))
+            return JsonResponse({'success': False, 'message': str(e)})
+
+    # Return a JSON response if the request method is not POST
+    return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+def delete_post(request, post_id):
+    post_details = get_object_or_404(post_publish, post_id=post_id)
+    if request.method == 'POST':
+        post_details.delete()
+    return redirect('publish_post') 
+
+def post_detail(request, post_id):
+    # Fetch the post by UUID (post_id)
+    post = get_object_or_404(post_publish, post_id=post_id)
+    
+    # Pass the post data to the template
+    return render(request, 'cso_app/post_page.html', {'post': post})
+
+def update_post_form(request, id):
+    if request.method == 'POST':
+        try:
+            post = post_publish.objects.get(id=id)
+            
+            # Update fields with new data from the request
+            post.post_header = request.POST.get('post_title')
+            post.published_date = request.POST.get('edit_post_date')
+            post.activity = request.POST.get('post_tag')
+            post.attachments = request.POST.get('post_attachment')
+            post.post_description = request.POST.get('edit_post_content')
+            post.featured = request.POST.get('featured_post')
+            post.status = request.POST.get('post_status')
+            print("This is the post: ", post, request.POST.get('edit_post_content'))
+            # Handle file upload
+            if 'post_img' in request.FILES:
+                post.post_img = request.FILES['post_img']
+
+            post.save()
+            user_id = request.user.user_id  # Fetch the user ID
+            user = get_object_or_404(users, user_id=user_id)
+            role = user.role
+            new_notification = notifications(
+                notification_title = "Post updated!",
+                notification_content = f"New post title {request.POST.get('post_title')} has been updated!",	
+                notification_view = "Admin",
+                notification_orgs = {request.POST.get('post_tag')},
+                notification_genre = 'posts',
+                author = user.full_name,
+                user_role = role
+            )
+            new_notification.save()
+
+            return JsonResponse({'success': True, 'redirect_url': '/publish_post/'})
+
+        except post_publish.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Post not found'}, status=404)
+    else:
+        return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=400)
+    
+def page_content(request):
+    user_id = request.user.user_id  # Fetch the user ID
+    user = get_object_or_404(users, user_id=user_id)
+    role = user.role
+    notifications_list = notifications.objects.all().order_by('-notification_created_at')
+    contents = page_contents.objects.all()
+    context = {'role':role, 'notifications_list':notifications_list, 'contents':contents}
+    return render(request, 'cso_app/administrator/manage_website/page_content.html', context)
+
+def content_page_upload(request):
+    if request.method == 'POST':
+        content_header = request.POST.get('content_header')
+        website_page = request.POST.get('website_page')
+        display_header = request.POST.get('display_header')
+        page_content = request.POST.get('page_content')
+        content_img = request.FILES.get('content_img')
+
+        try:
+            user_id = request.user.user_id  # Fetch the user ID
+            user = get_object_or_404(users, user_id=user_id)
+            role = user.role
+            new_content = page_contents(
+                content_header=content_header,
+                display_header=display_header,
+                page_content=page_content,
+                website_page = website_page,
+                content_img=content_img
+            )
+            new_content.save()
             new_notification = notifications(
                 notification_title = "New post uploaded!",
-                notification_content = f"New post title {post_title} has been uploaded",
+                notification_content = f"New page content header: {content_header} has been uploaded",
                 notification_view = "Admin",
                 notification_orgs = user.organization,
                 notification_genre = 'posts',
@@ -1950,7 +2061,7 @@ def post_form_upload(request):
             )
             new_notification.save()
             # Return a JSON response with a redirect URL
-            return JsonResponse({'success': True, 'redirect_url': 'publish_post'})
+            return JsonResponse({'success': True, 'redirect_url': '/page_content/'})
         except Exception as e:
             # Return a JSON response with an error message
             return JsonResponse({'success': False, 'message': str(e)})

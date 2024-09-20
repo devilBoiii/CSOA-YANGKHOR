@@ -62,107 +62,52 @@
           </div>
         </div>
 
-
         <div class="row multi-columns-row post-columns">
-          <div class="col-sm-6 col-md-4 col-lg-4">
-            <div class="post mb-20">
-              <div class="post-thumbnail"><a href="#"><img src="{% static 'img/post.png' %}" alt="Blog-post Thumbnail"/></a></div>
-              <div class="post-header font-alt">
-                <h2 class="post-title"><a href="#">Collaborate for Change: Inaugural CSOs Quarterly Summit</a></h2>
-                <div class="post-meta"><i class="fa fa-clock-o" aria-hidden="true"></i>
-                  23 November | <i class="fa fa-tag" aria-hidden="true"></i>
-                  News
+          {% for post in posts %}
+            <div class="col-sm-6 col-md-4 col-lg-4">
+              <div class="post mb-20">
+                <div class="post-thumbnail">
+                  <a href="#">
+                    {% if post.post_img %}
+                      <img src="{{ post.post_img.url }}" alt="{{ post.post_header }}"/>
+                    {% else %}
+                      <img src="{% static 'img/default_post.png' %}" alt="Default Post Thumbnail"/> <!-- Fallback image if no post_img -->
+                    {% endif %}
+                  </a>
                 </div>
-              </div>
-              <div class="post-entry">
-                <p>The CSOA Secretariat successfully organized the inaugural Quarterly CSOs Meet with an aim to enhance the networking among...</p>
-              </div>
-              <div class="post-more"><a class="more-link" href="#">Read more</a></div>
-            </div>
-          </div>
-          <div class="col-sm-6 col-md-4 col-lg-4">
-            <div class="post mb-20">
-              <div class="post-thumbnail"><a href="#"><img src="{% static 'img/post1.png' %}" alt="Blog-post Thumbnail"/></a></div>
-              <div class="post-header font-alt">
-                <h2 class="post-title"><a href="#">ANNOUNCEMENT: RESULT OF AUTHORITY MEMBER’S ELECTION</a></h2>
-                <div class="post-meta"><i class="fa fa-clock-o" aria-hidden="true"></i>
-                  23 November | <i class="fa fa-tag" aria-hidden="true"></i>
-                  News
+                <div class="post-header font-alt">
+                  <h2 class="post-title">
+                    <a href="#">{{ post.post_header }}</a>  <!-- Post title (post_header) -->
+                  </h2>
+                  <div class="post-meta">
+                    <i class="fa fa-clock-o" aria-hidden="true"></i> 
+                    {% if post.published_date %}
+                      {{ post.published_date|date:"d M Y" }}  <!-- Published date -->
+                    {% else %}
+                      No date available
+                    {% endif %} | 
+                    <i class="fa fa-tag" aria-hidden="true"></i> 
+                    {{ post.activity }}  <!-- Status of the post -->
+                  </div>
                 </div>
-              </div>
-              <div class="post-entry">
-                <p>In a landmark event for the oversight and governance of Civil Society Organizations in the country, the Civil Society Organizations Authority...</p>
-              </div>
-              <div class="post-more"><a class="more-link" href="#">Read more</a></div>
-            </div>
-          </div>
-          <div class="col-sm-6 col-md-4 col-lg-4">
-            <div class="post mb-20">
-              <div class="post-thumbnail"><a href="#"><img src="{% static 'img/post2.jpg' %}" alt="Blog-post Thumbnail"/></a></div>
-              <div class="post-header font-alt">
-                <h2 class="post-title"><a href="#">Bhutan Film Institute registered as CSO</a></h2>
-                <div class="post-meta"><i class="fa fa-clock-o" aria-hidden="true"></i>
-                  23 November | <i class="fa fa-tag" aria-hidden="true"></i>
-                  News
+                <div class="post-entry">
+                  <p style="margin-top: -15px; margin-bottom: 10px;">{{ post.post_description|truncatewords:20|safe }}</p> 
                 </div>
+                  <div class="post-more">
+                    <a class="more-link" href="{% url 'post_detail' post.post_id %}">Read more</a>
+                  </div>          
               </div>
-              <div class="post-entry">
-                <p>In a significant stride towards recognizing and fostering impactful philanthropic initiatives, the Authority has formally..</p>
-              </div>
-              <div class="post-more"><a class="more-link" href="#">Read more</a></div>
             </div>
-          </div>
+        
+            {% if forloop.counter|divisibleby:3 %}
+              </div><div class="row multi-columns-row post-columns"> <!-- New row after every 3 posts -->
+            {% endif %}
+          {% endfor %}
         </div>
+        
 
-        <div class="row multi-columns-row post-columns">
-          <div class="col-sm-6 col-md-4 col-lg-4">
-            <div class="post mb-20">
-              <div class="post-thumbnail"><a href="#"><img src="{% static 'img/post3.png' %}" alt="Blog-post Thumbnail"/></a></div>
-              <div class="post-header font-alt">
-                <h2 class="post-title"><a href="#">OFFICE RELOCATION NOTICE</a></h2>
-                <div class="post-meta"><i class="fa fa-clock-o" aria-hidden="true"></i>
-                  23 November | <i class="fa fa-tag" aria-hidden="true"></i>
-                  News
-                </div>
-              </div>
-              <div class="post-entry">
-                <p>Civil Society Organizations Authority hereby announces that, we will be relocating our Secretariat office to BICMA building...</p>
-              </div>
-              <div class="post-more"><a class="more-link" href="#">Read more</a></div>
-            </div>
-          </div>
-          <div class="col-sm-6 col-md-4 col-lg-4">
-            <div class="post mb-20">
-              <div class="post-thumbnail"><a href="#"><img src="{% static 'img/post4.jpg' %}" alt="Blog-post Thumbnail"/></a></div>
-              <div class="post-header font-alt">
-                <h2 class="post-title"><a href="#">ANNOUNCEMENT: RESULT OF AUTHORITY MEMBER’S ELECTION</a></h2>
-                <div class="post-meta"><i class="fa fa-clock-o" aria-hidden="true"></i>
-                  23 November | <i class="fa fa-tag" aria-hidden="true"></i>
-                  News
-                </div>
-              </div>
-              <div class="post-entry">
-                <p>The Secretariat of Civil Society Organizations Authority is pleased to declare that Mr. Passang Tshering, Executive Director...</p>
-              </div>
-              <div class="post-more"><a class="more-link" href="#">Read more</a></div>
-            </div>
-          </div>
-          <!--<div class="col-sm-6 col-md-4 col-lg-4">
-            <div class="post mb-20">
-              <div class="post-thumbnail"><a href="#"><img src="{% static 'img/post2.png' %}" alt="Blog-post Thumbnail"/></a></div>
-              <div class="post-header font-alt">
-                <h2 class="post-title"><a href="#">Bhutan Film Institute registered as CSO</a></h2>
-                <div class="post-meta"><i class="fa fa-clock-o" aria-hidden="true"></i>
-                  23 November | <i class="fa fa-tag" aria-hidden="true"></i>
-                  News
-                </div>
-              </div>
-              <div class="post-entry">
-                <p>In a significant stride towards recognizing and fostering impactful philanthropic initiatives, the Authority has formally..</p>
-              </div>
-              <div class="post-more"><a class="more-link" href="#">Read more</a></div>
-            </div>
-          </div>-->
+
+
         </div>
       </div>
     </section>

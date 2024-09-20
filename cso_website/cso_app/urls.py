@@ -126,6 +126,11 @@ urlpatterns = [
     path('delete-financial-attachment/<int:financial_attachments_id>/', views.delete_financial_attachment, name='delete_financial_attachment'),
     path('publish_post/', views.publish_post, name='publish_post'),
     path('post_form_upload/', views.post_form_upload, name='post_form_upload'),
+    path('update_post_form/<int:id>/', views.update_post_form, name='update_post_form'),
+    path('page_content/', views.page_content, name='page_content'),
+    path('delete_post/<uuid:post_id>/', views.delete_post, name='delete_post'),
+    path('content_page_upload/', views.content_page_upload, name='content_page_upload'),
+    path('post/<uuid:post_id>/', views.post_detail, name='post_detail'),
 
 
 ]
